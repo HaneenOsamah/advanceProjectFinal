@@ -423,44 +423,16 @@ app.get('/data-by-filter', (req, res) => {
 
 
 
-///////////////////////////////////upload file
-
-//const fs = require('fs');
-/*
-app.post('/submit-dataaaa', (req, res) => {
-  const { file } = req.body;
-
-  if (!file) {
-    return res.status(400).send('Please provide the file path.');
-  }
-
-  // Read file content
-  fs.readFile(file, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading file:', err);
-      return res.status(500).send('An error occurred while reading the file.');
-    }
-
-    // Process the file content as needed
-    console.log('File content:', data);
-
-    // Your logic to handle the file content...
-
-    res.status(200).json({ message: 'File content processed successfully.' });
-  });
-});
-*/
-////////////////////
 
 
 // OpenWeatherMap API Key
 const OPENWEATHERMAP_API_KEY = 'a2abf72bcf09b99f3381196c8e75cfdb';
 
-// External API Integration example
+
 app.get('/external-data/:user_id', async (req, res) => {
   const userId = req.params.user_id;
 
-  // Fetch user location based on user_id
+
   const getUserLocationSql = 'SELECT location FROM users WHERE id = ?';
   connection.query(getUserLocationSql, [userId], async (getUserLocationErr, userLocationResult) => {
     if (getUserLocationErr) {
@@ -474,7 +446,7 @@ app.get('/external-data/:user_id', async (req, res) => {
 
     const userLocation = userLocationResult[0].location;
 
-    // Use the user location to fetch external data (replace this with your actual logic)
+
     try {
       const externalData = await fetchWeatherData(userLocation);
       res.status(200).json(externalData);
@@ -484,7 +456,7 @@ app.get('/external-data/:user_id', async (req, res) => {
   });
 });
 
-// Example function to fetch weather data based on location
+
 async function fetchWeatherData(location) {
   try {
     const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${OPENWEATHERMAP_API_KEY}`);
