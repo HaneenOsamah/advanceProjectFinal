@@ -3,8 +3,9 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' }); // Specify the destination for uploaded files
-
+const bcrypt = require('bcrypt');
 const app = express();
+const axios = require('axios');
 const port = 3099;
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -25,15 +26,16 @@ connection.connect((err) => {
   console.log('Connected to the database successfully.');
 });
 ///////////////////////////////////////////////////////////////
-//////USERS:
 
 
-// Route for the home page
+
+
 app.get('/', (req, res) => {
   res.send('Welcome page!');
 });
 
-// Route for user signup
+
+//////////////////////////////////////////////////////////feature  2
 app.post('/signup', async (req, res) => {
   const { username, email, password, location, phone, interests } = req.body;
 
@@ -42,7 +44,7 @@ app.post('/signup', async (req, res) => {
   }
 
   try {
-    // Hash the password
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const sql = `INSERT INTO users (username, email, password, location, phone, interests) VALUES (?, ?, ?, ?, ?, ?)`;
@@ -77,7 +79,6 @@ app.post('/login', (req, res) => {
         return;
       }
 
-      // Search in the users table
       connection.query(
         'SELECT * FROM users WHERE email = ?',
         [email],
@@ -88,11 +89,11 @@ app.post('/login', (req, res) => {
             return;
           }
 
-          // Check if the user is found in either table
+       
           const foundUser = resultsPeople.length > 0 ? resultsPeople[0] : resultsUsers[0];
 
           if (foundUser) {
-            // Compare the provided password with the hashed password
+      
             const passwordMatch = await bcrypt.compare(password, foundUser.password);
 
             if (passwordMatch) {
@@ -166,7 +167,7 @@ app.get('/connectsame/:userId', (req, res) => {
 
     const userInterests = userInterestsResult[0].interests;
 
-    // Implement logic to find other users with similar interests
+ 
     const findSimilarUsersSql = `SELECT * FROM users WHERE id != ? AND interests = ? LIMIT 5`;
     connection.query(findSimilarUsersSql, [userId, userInterests], (findUsersErr, similarUsersResult) => {
       if (findUsersErr) {
@@ -183,10 +184,10 @@ app.get('/connectsame/:userId', (req, res) => {
 app.post('/signupforSRO', async (req, res) => {
   const { name, last_name, email, password, person_type } = req.body;
 
-  // Hash the password
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Insert data into the People table
+
   connection.query(
     'INSERT INTO People (name, last_name, email, password, person_type) VALUES (?, ?, ?, ?, ?)',
     [name, last_name || null, email, hashedPassword, person_type],
@@ -214,7 +215,7 @@ app.post('/submit-data', (req, res) => {
         return res.status(400).send('Please provide all the required fields.');
     }
 
-    // Generate a unique sensor_id using UUID
+   
     const sensor_id = uuid.v4();
 
     const sql = `INSERT INTO environmental_data (sensor_id, data_type, value, location, user_id) VALUES (?, ?, ?, ?, ?)`;
@@ -240,19 +241,16 @@ app.post('/submit-DATAFILE', (req, res) => {
     return res.status(400).send('Please provide the file path.');
   }
 
-  // Read file content
+
   fs.readFile(file, 'utf8', (err, data) => {
     if (err) {
       console.error('Error reading file:', err);
       return res.status(500).send('An error occurred while reading the file.');
     }
 
-    // Process the file content as needed
     console.log('File content:', data);
 
-    // Your logic to handle the file content...
 
-    // Assuming data is in JSON format, parse it
     let jsonData;
     try {
       jsonData = JSON.parse(data);
@@ -261,10 +259,9 @@ app.post('/submit-DATAFILE', (req, res) => {
       return res.status(500).send('Error parsing JSON data.');
     }
 
-    // Extract values from jsonData and construct SQL query
     const { sensor_id, data_type, value, location, user_id } = jsonData;
 
-    // Execute SQL query to insert data into the database
+   
     const insertQuery = 'INSERT INTO environmental_data (sensor_id, data_type, value, location, user_id) VALUES (?, ?, ?, ?, ?)';
     const values = [sensor_id, data_type, value, location, user_id];
 
@@ -426,6 +423,36 @@ app.get('/data-by-filter', (req, res) => {
 
 
 
+///////////////////////////////////upload file
+
+//const fs = require('fs');
+/*
+app.post('/submit-dataaaa', (req, res) => {
+  const { file } = req.body;
+
+  if (!file) {
+    return res.status(400).send('Please provide the file path.');
+  }
+
+  // Read file content
+  fs.readFile(file, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading file:', err);
+      return res.status(500).send('An error occurred while reading the file.');
+    }
+
+    // Process the file content as needed
+    console.log('File content:', data);
+
+    // Your logic to handle the file content...
+
+    res.status(200).json({ message: 'File content processed successfully.' });
+  });
+});
+*/
+////////////////////
+
+
 // OpenWeatherMap API Key
 const OPENWEATHERMAP_API_KEY = 'a2abf72bcf09b99f3381196c8e75cfdb';
 
@@ -457,10 +484,24 @@ app.get('/external-data/:user_id', async (req, res) => {
   });
 });
 
+// Example function to fetch weather data based on location
+async function fetchWeatherData(location) {
+  try {
+    const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${OPENWEATHERMAP_API_KEY}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching weather data:', error.message);
+    throw error;
+  }
+}
 
 
 
 
+
+
+
+////////////////
 
 
 

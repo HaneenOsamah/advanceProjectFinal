@@ -2,20 +2,19 @@ const mysql = require('mysql');
 
 const connection = mysql.createConnection({
   host: 'localhost',
-  user: 'root',  // اسم المستخدم الافتراضي لـ XAMPP
-  password: '',  // كلمة المرور الافتراضية لـ XAMPP
+  user: 'root',
+  password: '', 
   database: 'advance',
 });
 
 connection.connect((err) => {
   if (err) {
-    console.error('خطأ في الاتصال بقاعدة البيانات: ' + err.stack);
+    console.error('   error : ' + err.stack);
     return;
   }
   console.log('done');
 });
 
-// قم بإجراء استعلامات SQL هنا
 
 connection.end((err) => {
   if (err) {
