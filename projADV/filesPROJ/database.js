@@ -18,7 +18,7 @@ connection.connect((err) => {
 
 connection.end((err) => {
   if (err) {
-    console.error('خطأ في إنهاء الاتصال: ' + err.stack);
+    console.error('   error: ' + err.stack);
     return;
   }
   console.log('done2');
