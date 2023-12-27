@@ -1,0 +1,14 @@
+[
+  {
+    "data_type": "temperature",
+    "value": 25.5,
+    "location": "Latitude: 40.7128, Longitude: -74.0060",
+    "user_id": 123
+  },
+  {
+    "data_type": "humidity",
+    "value": 60,
+    "location": "Latitude: 40.7128, Longitude: -74.0060",
+    "user_id": 456
+  }
+]
